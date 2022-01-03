@@ -21,6 +21,7 @@ class DatoRoutes {
         this.index = (req, res) => __awaiter(this, void 0, void 0, function* () {
             res.send('Hotel');
         });
+        //Mostrar
         this.getHabitaciones = (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
@@ -69,6 +70,8 @@ class DatoRoutes {
             });
             database_1.db.desconectarBD();
         });
+        //Crear
+        //Habitaciones 
         this.postHabitacionb = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { tipoObjeto, idHab, camas, pnoche, estado, desayuno } = req.body;
             yield database_1.db.conectarBD();
@@ -120,6 +123,7 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             yield database_1.db.desconectarBD();
         });
+        //Empleados
         this.postEmpleador = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { tipoObjeto, dni, salarioBase, nocturnidad } = req.body;
             yield database_1.db.conectarBD();
@@ -184,6 +188,7 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             yield database_1.db.desconectarBD();
         });
+        //Cliente
         this.postCliente = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const cliente = new CliSchema_1.Clientes(req.body);
             console.log(cliente);
@@ -218,6 +223,7 @@ class DatoRoutes {
             //     .catch( (err: any) => res.send('Error: '+ err)) 
             // await db.desconectarBD()
         });
+        //Reservas
         this.postReservas = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { clientes, nDias, habitacion, nPersonas, precio } = req.body;
             yield database_1.db.conectarBD();
@@ -234,6 +240,7 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             yield database_1.db.desconectarBD();
         });
+        //Buscar por DNI
         this.getclienteDNI = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const valor = req.params.valor;
             yield database_1.db.conectarBD()
@@ -250,12 +257,28 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
-        this.getreserva = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.getreservaDNI = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const valor = req.params.valor;
             yield database_1.db.conectarBD()
                 .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
                 console.log(mensaje);
                 const query = yield ResSchema_1.Reservas.aggregate([
+                    {
+                        $match: { "_cliente": valor }
+                    }
+                ]);
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+        });
+        this.getempleadoDNI = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const valor = req.params.valor;
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield EmpSchema_1.Empleado.aggregate([
                     {
                         $match: { "_dni": valor }
                     }
@@ -266,6 +289,8 @@ class DatoRoutes {
                 res.send(mensaje);
             });
         });
+        //DELETE
+        //Cliente
         this.deleteCliente = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { dni } = req.params;
             yield database_1.db.conectarBD();
@@ -281,6 +306,7 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             database_1.db.desconectarBD();
         });
+        //Empleados
         this.deleteEmpleados = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { dni } = req.params;
             yield database_1.db.conectarBD();
@@ -296,6 +322,7 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             database_1.db.desconectarBD();
         });
+        //Habitaciones
         this.deleteHabitaciones = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { IdHab } = req.params;
             yield database_1.db.conectarBD();
@@ -311,10 +338,11 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             database_1.db.desconectarBD();
         });
+        //Reservas
         this.deleteReservas = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { dni } = req.params;
             yield database_1.db.conectarBD();
-            yield ResSchema_1.Reservas.findOneAndDelete({ _dni: dni })
+            yield ResSchema_1.Reservas.findOneAndDelete({ _cliente: dni })
                 .then((doc) => {
                 if (doc == null) {
                     res.send(`No encontrado`);
@@ -326,58 +354,250 @@ class DatoRoutes {
                 .catch((err) => res.send('Error: ' + err));
             database_1.db.desconectarBD();
         });
+        //UPDATE
+        //UPDATE Cliente
+        this.modificarCliente = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            //const valor = req.params.valor
+            //console.log(valor)
+            //const modificar = req.params.modificar
+            const clientes = new CliSchema_1.Clientes(req.body);
+            console.log(clientes);
+            console.log(clientes);
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield CliSchema_1.Clientes.findOneAndUpdate({ _matricula: clientes._matricula }, {
+                    _tipoObjeto: clientes._tipoObjeto,
+                    _precioBase: clientes._precioBase,
+                    _potenciaMotor: clientes._potenciaMotor,
+                    _traccion: clientes._traccion,
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        //UPDATE Habitacion
+        this.modificarHabitacionb = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const habitaciones = new HabiSchema_1.Habitaciones(req.body);
+            console.log(habitaciones);
+            //console.log(habitaciones)
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield HabiSchema_1.Habitaciones.findOneAndUpdate({ _IdHab: habitaciones._IdHab }, {
+                    _tipoObjeto: habitaciones._tipoObjeto,
+                    _IdHab: habitaciones._IdHab,
+                    _Camas: habitaciones._Camas,
+                    _PNoche: habitaciones._PNoche,
+                    _estado: habitaciones._estado,
+                    _desayuno: habitaciones._desayuno
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarHabitacionf = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const habitaciones = new HabiSchema_1.Habitaciones(req.body);
+            console.log(habitaciones);
+            //console.log(habitaciones)
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield HabiSchema_1.Habitaciones.findOneAndUpdate({ _IdHab: habitaciones._IdHab }, {
+                    _tipoObjeto: habitaciones._tipoObjeto,
+                    _IdHab: habitaciones._IdHab,
+                    _Camas: habitaciones._Camas,
+                    _PNoche: habitaciones._PNoche,
+                    _estado: habitaciones._estado,
+                    _supletoria: habitaciones._supletoria
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarHabitacionv = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const habitaciones = new HabiSchema_1.Habitaciones(req.body);
+            console.log(habitaciones);
+            //console.log(habitaciones)
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield HabiSchema_1.Habitaciones.findOneAndUpdate({ _IdHab: habitaciones._IdHab }, {
+                    _tipoObjeto: habitaciones._tipoObjeto,
+                    _IdHab: habitaciones._IdHab,
+                    _Camas: habitaciones._Camas,
+                    _PNoche: habitaciones._PNoche,
+                    _estado: habitaciones._estado,
+                    _spa: habitaciones._spa
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        //UPDATE Empleado
+        this.modificarEmpleadol = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const empleado = new EmpSchema_1.Empleado(req.body);
+            console.log(empleado);
+            //console.log(habitaciones)
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield EmpSchema_1.Empleado.findOneAndUpdate({ _dni: empleado._dni }, {
+                    _dni: empleado._dni,
+                    _salariosBase: empleado._salariosBase,
+                    _tipoObjeto: empleado._tipoObjeto,
+                    _habitaciones: empleado._habitaciones,
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarEmpleadoc = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const empleado = new EmpSchema_1.Empleado(req.body);
+            console.log(empleado);
+            //console.log(habitaciones)
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield EmpSchema_1.Empleado.findOneAndUpdate({ _dni: empleado._dni }, {
+                    _dni: empleado._dni,
+                    _salariosBase: empleado._salariosBase,
+                    _tipoObjeto: empleado._tipoObjeto,
+                    _Titulacion: empleado._Titulacion,
+                    _NEstrella: empleado._NEstrella,
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarEmpleador = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const empleado = new EmpSchema_1.Empleado(req.body);
+            console.log(empleado);
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield EmpSchema_1.Empleado.findOneAndUpdate({ _dni: empleado._dni }, {
+                    _dni: empleado._dni,
+                    _salariosBase: empleado._salariosBase,
+                    _tipoObjeto: empleado._tipoObjeto,
+                    _Nocturnidad: empleado._Nocturnidad
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        //UPDATE Reservas
+        this.modificarReserva = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const reserva = new ResSchema_1.Reservas(req.body);
+            console.log(reserva);
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const query = yield ResSchema_1.Reservas.findOneAndUpdate({ _cliente: reserva._dni }, {
+                    _cliente: reserva._cliente,
+                    _nDias: reserva._nDias,
+                    _habitacion: reserva._habitacion,
+                    _nPersonas: reserva._nPersonas,
+                    _Precio: reserva._Precio,
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        //UPDATE Reservas
+        this.modificarClienteURL = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const dni = req.params.dni;
+                const cambioP = req.params.cambioP;
+                const query = yield CliSchema_1.Clientes.findOneAndUpdate({ _dni: dni }, {
+                    _nTarjera: cambioP
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarEstadoHabitacionURL = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const IdHab = req.params.IdHab;
+                const cambioP = req.params.cambioP;
+                const query = yield HabiSchema_1.Habitaciones.findOneAndUpdate({ _IdHab: IdHab }, {
+                    _estado: cambioP
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarSalarioEmpledoURL = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const dni = req.params.dni;
+                const cambioP = req.params.cambioP;
+                const query = yield EmpSchema_1.Empleado.findOneAndUpdate({ _dni: dni }, {
+                    _salarioBase: cambioP
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
+        this.modificarNDiasReservaURL = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD()
+                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
+                console.log(mensaje);
+                const cliente = req.params.cliente;
+                const cambioP = req.params.cambioP;
+                const query = yield ResSchema_1.Reservas.findOneAndUpdate({ _cliente: cliente }, {
+                    _nDias: cambioP
+                }, { new: true });
+                res.json(query);
+            }))
+                .catch((mensaje) => {
+                res.send(mensaje);
+            });
+            database_1.db.desconectarBD();
+        });
         this._router = (0, express_1.Router)();
     }
     get router() {
         return this._router;
     }
-    // private modificarAuto = async (req: Request, res: Response) => {
-    //     //const valor = req.params.valor
-    //     //console.log(valor)
-    //     //const modificar = req.params.modificar
-    //     const auto = new Autos(req.body)
-    //     console.log(auto)
-    //     console.log(auto)
-    //     await db.conectarBD()
-    //     .then( async (mensaje) => {
-    //         console.log(mensaje)
-    //         const query  = await Autos.findOneAndUpdate(
-    //             {_matricula: auto._matricula},
-    //             {
-    //                 _tipoObjeto: auto._tipoObjeto,
-    //                 _precioBase: auto._precioBase,
-    //                 _potenciaMotor: auto._potenciaMotor,
-    //                 _traccion: auto._traccion, 
-    //             },
-    //             {new: true}
-    //         )
-    //         res.json(query)
-    //     })
-    //     .catch((mensaje) => {
-    //         res.send(mensaje)
-    //     })
-    //     db.desconectarBD()
-    // }
-    // private modificarAuto2 = async (req: Request, res: Response) => {
-    //     await db.conectarBD()
-    //     .then( async (mensaje) => {
-    //         console.log(mensaje)
-    //         const matriculaP = req.params.matriculaP
-    //         const cambioP = req.params.cambioP
-    //         const query  = await Autos.findOneAndUpdate(
-    //             {_matricula: matriculaP},
-    //             {
-    //                 _potenciaMotor: cambioP
-    //             },
-    //             {new: true}
-    //         )
-    //         res.json(query)
-    //     })
-    //     .catch((mensaje) => {
-    //         res.send(mensaje)
-    //     })
-    //     db.desconectarBD()
-    // }
     // private deleteAutos = async (req: Request, res: Response) => {
     //     const matricula =req.params.matricula
     //     await db.conectarBD()
@@ -423,16 +643,23 @@ class DatoRoutes {
         this._router.post('/Ccliente', this.postCliente);
         this._router.post('/Creserva', this.postReservas);
         //AÑADIR
-        //this._router.post('/crearcliente', this.)
         //Consultar un cliente
         this._router.get('/clientes/:valor', this.getclienteDNI);
-        this._router.get('/reserva/:valor', this.getreserva);
-        //Crear
-        // this._router.put('/modificar', this.modificarAuto)
-        // this._router.put('/mod/:matriculaP/:cambioP', this.modificarAuto2)
-        // this._router.delete('/auto/:matricula', this.deleteAutos)
-        //this._router.put('/autos/:matriculax/:cambio', this.updatePm)
-        //UPDATE
+        this._router.get('/empleado/:valor', this.getempleadoDNI);
+        this._router.get('/reserva/:valor', this.getreservaDNI);
+        //Modificar
+        this._router.put('/modificarCliente', this.modificarCliente);
+        this._router.put('/modificarHabitacionb', this.modificarHabitacionb);
+        this._router.put('/modificarHabitacionf', this.modificarHabitacionf);
+        this._router.put('/modificarHabitacionv', this.modificarHabitacionv);
+        this._router.put('/modificarEmpleadoc', this.modificarEmpleadoc);
+        this._router.put('/modificarEmpleadol', this.modificarEmpleadol);
+        this._router.put('/modificarEmpleador', this.modificarEmpleador);
+        this._router.put('/modificarReserva', this.modificarReserva);
+        this._router.put('/modificarClienteURL/:dni/:cambioP', this.modificarClienteURL);
+        this._router.put('/modificarEstadoHabitacionURL/:IdHab/:cambioP', this.modificarEstadoHabitacionURL);
+        this._router.put('/modificarEstadoHabitacionURL/:dni/:cambioP', this.modificarSalarioEmpledoURL);
+        this._router.put('/modificarNDiasReservaURL/:cliente/:cambioP', this.modificarNDiasReservaURL);
         //DELETE
         this._router.delete('/deleteCliente/:dni', this.deleteCliente);
         this._router.delete('/deleteEmpleado/:dni', this.deleteEmpleados);

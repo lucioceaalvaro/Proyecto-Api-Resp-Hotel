@@ -19,6 +19,7 @@ class DatoRoutes {
     private index= async (req: Request, res: Response) => {
         res.send('Hotel')
     }
+    //Mostrar
     private getHabitaciones = async (req: Request, res: Response) => {
         await db.conectarBD()
         .then( async (mensaje) => {
@@ -71,6 +72,9 @@ class DatoRoutes {
 
         db.desconectarBD()
     }
+
+    //Crear
+    //Habitaciones 
     private postHabitacionb = async (req: Request, res: Response) => {
         const { tipoObjeto,idHab,camas,pnoche,estado,desayuno} = req.body
         await db.conectarBD()
@@ -124,6 +128,7 @@ class DatoRoutes {
             .catch( (err: any) => res.send('Error: '+ err)) 
         await db.desconectarBD()
     }
+    //Empleados
     private postEmpleador = async (req: Request, res: Response) => {
         const { tipoObjeto,dni,salarioBase,nocturnidad} = req.body
         await db.conectarBD()
@@ -188,6 +193,7 @@ class DatoRoutes {
             .catch( (err: any) => res.send('Error: '+ err)) 
         await db.desconectarBD()
     }
+    //Cliente
     private postCliente = async (req: Request, res: Response) => {
         const cliente = new Clientes(req.body)
         console.log(cliente)
@@ -230,6 +236,7 @@ class DatoRoutes {
         //     .catch( (err: any) => res.send('Error: '+ err)) 
         // await db.desconectarBD()
     }
+    //Reservas
     private postReservas = async (req: Request, res: Response) => {
         const {clientes,nDias,habitacion,nPersonas,precio} = req.body
         await db.conectarBD()
@@ -246,7 +253,7 @@ class DatoRoutes {
             .catch( (err: any) => res.send('Error: '+ err)) 
         await db.desconectarBD()
     }
-
+    //Buscar por DNI
     private getclienteDNI = async (req: Request, res: Response) => {
         const valor = req.params.valor
         await db.conectarBD()
@@ -264,12 +271,29 @@ class DatoRoutes {
         })
 
     }
-    private getreserva = async (req: Request, res: Response) => {
+    private getreservaDNI = async (req: Request, res: Response) => {
         const valor = req.params.valor
         await db.conectarBD()
         .then( async (mensaje) => {
             console.log(mensaje)
             const query  = await Reservas.aggregate([
+                {
+                  $match:{"_cliente" : valor}
+      
+                }])
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+    }
+    private getempleadoDNI = async (req: Request, res: Response) => {
+        const valor = req.params.valor
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Empleado.aggregate([
                 {
                   $match:{"_dni" : valor}
       
@@ -281,8 +305,9 @@ class DatoRoutes {
         })
 
     }
-
     
+    //DELETE
+    //Cliente
     private deleteCliente = async (req: Request, res: Response) => {
         const { dni } = req.params
         await db.conectarBD()
@@ -299,6 +324,7 @@ class DatoRoutes {
             .catch( (err: any) => res.send('Error: '+ err)) 
         db.desconectarBD()
     }
+    //Empleados
     private deleteEmpleados = async (req: Request, res: Response) => {
         const { dni } = req.params
         await db.conectarBD()
@@ -315,6 +341,7 @@ class DatoRoutes {
             .catch( (err: any) => res.send('Error: '+ err)) 
         db.desconectarBD()
     }
+    //Habitaciones
     private deleteHabitaciones = async (req: Request, res: Response) => {
         const { IdHab } = req.params
         await db.conectarBD()
@@ -331,11 +358,12 @@ class DatoRoutes {
             .catch( (err: any) => res.send('Error: '+ err)) 
         db.desconectarBD()
     }
+    //Reservas
     private deleteReservas = async (req: Request, res: Response) => {
         const { dni } = req.params
         await db.conectarBD()
         await Reservas.findOneAndDelete(
-                { _dni: dni}
+                { _cliente: dni}
             )
             .then( (doc: any) => {
                     if (doc == null) {
@@ -348,57 +376,325 @@ class DatoRoutes {
         db.desconectarBD()
     }
 
-    // private modificarAuto = async (req: Request, res: Response) => {
-    //     //const valor = req.params.valor
-    //     //console.log(valor)
-    //     //const modificar = req.params.modificar
-    //     const auto = new Autos(req.body)
-    //     console.log(auto)
-    //     console.log(auto)
-    //     await db.conectarBD()
-    //     .then( async (mensaje) => {
-    //         console.log(mensaje)
-    //         const query  = await Autos.findOneAndUpdate(
-    //             {_matricula: auto._matricula},
-    //             {
-    //                 _tipoObjeto: auto._tipoObjeto,
-    //                 _precioBase: auto._precioBase,
-    //                 _potenciaMotor: auto._potenciaMotor,
-    //                 _traccion: auto._traccion, 
-    //             },
-    //             {new: true}
-    //         )
-    //         res.json(query)
-    //     })
-    //     .catch((mensaje) => {
-    //         res.send(mensaje)
-    //     })
+    //UPDATE
+    //UPDATE Cliente
+    private modificarCliente = async (req: Request, res: Response) => {
+        //const valor = req.params.valor
+        //console.log(valor)
+        //const modificar = req.params.modificar
+        const clientes = new Clientes(req.body)
+        console.log(clientes)
+        console.log(clientes)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Clientes.findOneAndUpdate(
+                {_matricula: clientes._matricula},
+                {
+                    _tipoObjeto: clientes._tipoObjeto,
+                    _precioBase: clientes._precioBase,
+                    _potenciaMotor: clientes._potenciaMotor,
+                    _traccion: clientes._traccion, 
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
 
-    //     db.desconectarBD()
-    // }
+        db.desconectarBD()
+    }
+    //UPDATE Habitacion
+    private modificarHabitacionb = async (req: Request, res: Response) => {
+        
+        const habitaciones = new Habitaciones(req.body)
+        console.log(habitaciones)
+        //console.log(habitaciones)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Habitaciones.findOneAndUpdate(
+                {_IdHab: habitaciones._IdHab},
+                {
+                    
+                    _tipoObjeto: habitaciones._tipoObjeto,
+                    _IdHab:habitaciones._IdHab,
+                    _Camas:habitaciones._Camas,
+                    _PNoche:habitaciones._PNoche,
+                    _estado:habitaciones._estado,
+                    _desayuno:habitaciones._desayuno
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
 
-    // private modificarAuto2 = async (req: Request, res: Response) => {
+        db.desconectarBD()
+    }
+    private modificarHabitacionf = async (req: Request, res: Response) => {
+        
+        const habitaciones = new Habitaciones(req.body)
+        console.log(habitaciones)
+        //console.log(habitaciones)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Habitaciones.findOneAndUpdate(
+                {_IdHab: habitaciones._IdHab},
+                {
+                    
+                    _tipoObjeto: habitaciones._tipoObjeto,
+                    _IdHab:habitaciones._IdHab,
+                    _Camas:habitaciones._Camas,
+                    _PNoche:habitaciones._PNoche,
+                    _estado:habitaciones._estado,
+                    _supletoria:habitaciones._supletoria
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
 
-    //     await db.conectarBD()
-    //     .then( async (mensaje) => {
-    //         console.log(mensaje)
-    //         const matriculaP = req.params.matriculaP
-    //         const cambioP = req.params.cambioP
-    //         const query  = await Autos.findOneAndUpdate(
-    //             {_matricula: matriculaP},
-    //             {
-    //                 _potenciaMotor: cambioP
-    //             },
-    //             {new: true}
-    //         )
-    //         res.json(query)
-    //     })
-    //     .catch((mensaje) => {
-    //         res.send(mensaje)
-    //     })
+        db.desconectarBD()
+    }
+    private modificarHabitacionv = async (req: Request, res: Response) => {
+        
+        const habitaciones = new Habitaciones(req.body)
+        console.log(habitaciones)
+        //console.log(habitaciones)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Habitaciones.findOneAndUpdate(
+                {_IdHab: habitaciones._IdHab},
+                {
+                    
+                    _tipoObjeto: habitaciones._tipoObjeto,
+                    _IdHab:habitaciones._IdHab,
+                    _Camas:habitaciones._Camas,
+                    _PNoche:habitaciones._PNoche,
+                    _estado:habitaciones._estado,
+                    _spa:habitaciones._spa
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
 
-    //     db.desconectarBD()
-    // }
+        db.desconectarBD()
+    }
+    //UPDATE Empleado
+    private modificarEmpleadol = async (req: Request, res: Response) => {
+        
+        const empleado = new Empleado(req.body)
+        console.log(empleado)
+        //console.log(habitaciones)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Empleado.findOneAndUpdate(
+                {_dni: empleado._dni},
+                {
+                    
+                    _dni: empleado._dni,
+                    _salariosBase: empleado._salariosBase,
+                    _tipoObjeto: empleado._tipoObjeto,
+                    _habitaciones: empleado._habitaciones,
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    private modificarEmpleadoc = async (req: Request, res: Response) => {
+        
+        const empleado = new Empleado(req.body)
+        console.log(empleado)
+        //console.log(habitaciones)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Empleado.findOneAndUpdate(
+                {_dni: empleado._dni},
+                {
+                    
+                    _dni: empleado._dni,
+                    _salariosBase: empleado._salariosBase,
+                    _tipoObjeto: empleado._tipoObjeto,
+                    _Titulacion:empleado._Titulacion,
+                    _NEstrella: empleado._NEstrella,
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    private modificarEmpleador = async (req: Request, res: Response) => {
+        
+        const empleado = new Empleado(req.body)
+        console.log(empleado)
+        
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Empleado.findOneAndUpdate(
+                {_dni: empleado._dni},
+                {
+                    
+                    _dni: empleado._dni,
+                    _salariosBase: empleado._salariosBase,
+                    _tipoObjeto: empleado._tipoObjeto,
+                    _Nocturnidad:empleado._Nocturnidad
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    //UPDATE Reservas
+    private modificarReserva = async (req: Request, res: Response) => {
+        
+        const reserva = new Reservas(req.body)
+        console.log(reserva)
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const query  = await Reservas.findOneAndUpdate(
+                {_cliente: reserva._dni},
+                {
+                    
+                    _cliente:reserva._cliente,
+                    _nDias:reserva._nDias,
+                    _habitacion:reserva._habitacion,
+                    _nPersonas:reserva._nPersonas,
+                    _Precio:reserva._Precio,
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    //UPDATE Reservas
+    private modificarClienteURL = async (req: Request, res: Response) => {
+
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const dni = req.params.dni
+            const cambioP = req.params.cambioP
+            const query  = await Clientes.findOneAndUpdate(
+                {_dni: dni},
+                {
+                    _nTarjera: cambioP
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    private modificarEstadoHabitacionURL = async (req: Request, res: Response) => {
+
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const IdHab = req.params.IdHab
+            const cambioP = req.params.cambioP
+            const query  = await Habitaciones.findOneAndUpdate(
+                {_IdHab: IdHab},
+                {
+                    _estado: cambioP
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    private modificarSalarioEmpledoURL = async (req: Request, res: Response) => {
+
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const dni = req.params.dni
+            const cambioP = req.params.cambioP
+            const query  = await Empleado.findOneAndUpdate(
+                {_dni: dni},
+                {
+                    _salarioBase: cambioP
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    private modificarNDiasReservaURL = async (req: Request, res: Response) => {
+
+        await db.conectarBD()
+        .then( async (mensaje) => {
+            console.log(mensaje)
+            const cliente = req.params.cliente
+            const cambioP = req.params.cambioP
+            const query  = await Reservas.findOneAndUpdate(
+                {_cliente: cliente},
+                {
+                    _nDias: cambioP
+                },
+                {new: true}
+            )
+            res.json(query)
+        })
+        .catch((mensaje) => {
+            res.send(mensaje)
+        })
+
+        db.desconectarBD()
+    }
+    
     // private deleteAutos = async (req: Request, res: Response) => {
     //     const matricula =req.params.matricula
     //     await db.conectarBD()
@@ -450,18 +746,30 @@ class DatoRoutes {
         this._router.post('/Ccliente', this.postCliente)
         this._router.post('/Creserva', this.postReservas)
         //AÑADIR
-        //this._router.post('/crearcliente', this.)
+        
         //Consultar un cliente
         this._router.get('/clientes/:valor', this.getclienteDNI)
-        this._router.get('/reserva/:valor', this.getreserva)
-        //Crear
+        this._router.get('/empleado/:valor', this.getempleadoDNI)
+        this._router.get('/reserva/:valor', this.getreservaDNI)
+        //Modificar
        
-        // this._router.put('/modificar', this.modificarAuto)
-        // this._router.put('/mod/:matriculaP/:cambioP', this.modificarAuto2)
-        // this._router.delete('/auto/:matricula', this.deleteAutos)
-        //this._router.put('/autos/:matriculax/:cambio', this.updatePm)
-        //UPDATE
+        this._router.put('/modificarCliente', this.modificarCliente)
+        this._router.put('/modificarHabitacionb', this.modificarHabitacionb)
+        this._router.put('/modificarHabitacionf', this.modificarHabitacionf)
+        this._router.put('/modificarHabitacionv', this.modificarHabitacionv)
+
+        this._router.put('/modificarEmpleadoc', this.modificarEmpleadoc)
+        this._router.put('/modificarEmpleadol', this.modificarEmpleadol)
+        this._router.put('/modificarEmpleador', this.modificarEmpleador)
         
+        this._router.put('/modificarReserva', this.modificarReserva)
+
+        this._router.put('/modificarClienteURL/:dni/:cambioP', this.modificarClienteURL)
+        this._router.put('/modificarEstadoHabitacionURL/:IdHab/:cambioP', this.modificarEstadoHabitacionURL)
+        this._router.put('/modificarEstadoHabitacionURL/:dni/:cambioP', this.modificarSalarioEmpledoURL)
+        this._router.put('/modificarNDiasReservaURL/:cliente/:cambioP', this.modificarNDiasReservaURL)
+
+                
         //DELETE
         this._router.delete('/deleteCliente/:dni', this.deleteCliente)
         this._router.delete('/deleteEmpleado/:dni', this.deleteEmpleados)
