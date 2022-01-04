@@ -17,7 +17,7 @@ class DatoRoutes {
         return this._router
     }
     private index= async (req: Request, res: Response) => {
-        res.send('Hotel')
+        res.send("<h1>Plataforma Hotel</h1>")
     }
     //Mostrar
     private getHabitaciones = async (req: Request, res: Response) => {
@@ -694,6 +694,7 @@ class DatoRoutes {
 
         db.desconectarBD()
     }
+    
     
     // private deleteAutos = async (req: Request, res: Response) => {
     //     const matricula =req.params.matricula

@@ -19,7 +19,7 @@ const database_1 = require("../database/database");
 class DatoRoutes {
     constructor() {
         this.index = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            res.send('Hotel');
+            res.send("<h1>Plataforma Hotel</h1>");
         });
         //Mostrar
         this.getHabitaciones = (req, res) => __awaiter(this, void 0, void 0, function* () {
