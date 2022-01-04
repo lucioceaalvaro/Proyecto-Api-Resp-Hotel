@@ -202,7 +202,8 @@ class DatoRoutes {
                     _nTarjeta: cliente._nTarjeta
                 });
                 console.log(mensaje);
-                yield cliente.save()
+                const oSchema = new CliSchema_1.Clientes(pSchema);
+                yield oSchema.save()
                     .then((doc) => res.send("documento salvado " + doc))
                     .catch((err) => res.send(err));
             }))

@@ -212,8 +212,9 @@ class DatoRoutes {
             })
 
             console.log(mensaje)
+            const oSchema = new Clientes(pSchema)
+            await oSchema.save()
             
-            await cliente.save()
             .then ((doc:any) => res.send("documento salvado "+doc))
             .catch((err:any) => res.send(err))
         })
