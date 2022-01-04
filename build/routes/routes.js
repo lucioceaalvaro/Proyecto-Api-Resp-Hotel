@@ -155,14 +155,14 @@ class DatoRoutes {
             yield database_1.db.desconectarBD();
         });
         this.postEmpleadoc = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { tipoObjeto, dni, salarioBase, NEstrellas, Titulacion } = req.body;
+            const { tipoObjeto, dni, salarioBase, Titulacion, NEstrellas } = req.body;
             yield database_1.db.conectarBD();
             const dSchema = {
                 _tipoObjeto: tipoObjeto,
                 _dni: dni,
                 _salarioBase: salarioBase,
-                _NEstrellas: NEstrellas,
-                _Titulacion: Titulacion
+                _Titulacion: Titulacion,
+                _NEstrellas: NEstrellas
             };
             const oSchema = new EmpSchema_1.Empleado(dSchema);
             yield oSchema.save()
@@ -190,27 +190,18 @@ class DatoRoutes {
         });
         //Cliente
         this.postCliente = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const cliente = new CliSchema_1.Clientes(req.body);
-            console.log(cliente);
-            yield database_1.db.conectarBD()
-                .then((mensaje) => __awaiter(this, void 0, void 0, function* () {
-                let pSchema;
-                pSchema.save();
-                pSchema = new CliSchema_1.Clientes({
-                    _dni: cliente._dni,
-                    _nombre: cliente._nombre,
-                    _nTarjeta: cliente._nTarjeta
-                });
-                console.log(mensaje);
-                const oSchema = new CliSchema_1.Clientes(pSchema);
-                yield oSchema.save()
-                    .then((doc) => res.send("documento salvado " + doc))
-                    .catch((err) => res.send(err));
-            }))
-                .catch((mensaje) => {
-                res.send(mensaje);
-            });
-            database_1.db.desconectarBD();
+            const { dni, nombre, nTarjeta } = req.body;
+            yield database_1.db.conectarBD();
+            const dSchema = {
+                _dni: dni,
+                _nombre: nombre,
+                _nTarjeta: nTarjeta
+            };
+            const oSchema = new CliSchema_1.Clientes(dSchema);
+            yield oSchema.save()
+                .then((doc) => res.send(doc))
+                .catch((err) => res.send('Error: ' + err));
+            yield database_1.db.desconectarBD();
             // const {dni,nombre,nTarjeta} = req.body
             // await db.conectarBD()
             // const dSchema={
