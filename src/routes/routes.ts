@@ -17,7 +17,7 @@ class DatoRoutes {
         return this._router
     }
     private index= async (req: Request, res: Response) => {
-        res.send('<h1>Plataforma Hotel</h1><br><a href="https://proyecto-segunda-evaluacion.herokuapp.com/clientes" > Ver Clientes </a>')
+        res.send('<h1>Plataforma Hotel</h1><br><hr><a href="https://proyecto-segunda-evaluacion.herokuapp.com/clientes" > Ver Clientes </a><br><a href="https://proyecto-segunda-evaluacion.herokuapp.com/empleados" > Ver Empleados </a><br><a href="https://proyecto-segunda-evaluacion.herokuapp.com/habitaciones" > Ver Habitaciones </a><br><a href="https://proyecto-segunda-evaluacion.herokuapp.com/reservas" > Ver Reservas </a>')
     }
     //Mostrar
     private getHabitaciones = async (req: Request, res: Response) => {
