@@ -19,7 +19,7 @@ const database_1 = require("../database/database");
 class DatoRoutes {
     constructor() {
         this.index = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            res.send("<h1>Plataforma Hotel</h1>");
+            res.send('<h1>Plataforma Hotel</h1><br><a href="https://proyecto-segunda-evaluacion.herokuapp.com/clientes" > Ver Clientes </a>');
         });
         //Mostrar
         this.getHabitaciones = (req, res) => __awaiter(this, void 0, void 0, function* () {
