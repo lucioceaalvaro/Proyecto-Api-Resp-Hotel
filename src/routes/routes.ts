@@ -160,14 +160,15 @@ class DatoRoutes {
         await db.desconectarBD()
     }
     private postEmpleadoc = async (req: Request, res: Response) => {
-        const { tipoObjeto,dni,salarioBase,NEstrellas,Titulacion} = req.body
+        const { tipoObjeto,dni,salarioBase,Titulacion,NEstrellas} = req.body
         await db.conectarBD()
         const dSchema={
             _tipoObjeto:tipoObjeto,
             _dni: dni,
             _salarioBase:salarioBase,
-            _NEstrellas:NEstrellas,
-            _Titulacion:Titulacion
+            _Titulacion:Titulacion,
+            _NEstrellas:NEstrellas
+            
         }
         const oSchema = new Empleado(dSchema)
         await oSchema.save()
@@ -195,35 +196,26 @@ class DatoRoutes {
     }
     //Cliente
     private postCliente = async (req: Request, res: Response) => {
-        const cliente = new Clientes(req.body)
-        console.log(cliente)
+        const {dni,nombre,nTarjeta} = req.body
         await db.conectarBD()
-        .then( async (mensaje) => {
-            let pSchema : any
-
+        const dSchema={
             
-            pSchema.save()
-            pSchema = new Clientes({
-                _dni:cliente._dni,
-                _nombre:cliente._nombre,
-                _nTarjeta:cliente._nTarjeta
-                
-                
-            })
-
-            console.log(mensaje)
-            const oSchema = new Clientes(pSchema)
-            await oSchema.save()
+            _dni: dni,
+            _nombre: nombre,
+            _nTarjeta:nTarjeta
             
-            .then ((doc:any) => res.send("documento salvado "+doc))
-            .catch((err:any) => res.send(err))
-        })
+            
+            
+            
+        }
+        const oSchema = new Clientes(dSchema)
+        await oSchema.save()
+            .then( (doc: any) => res.send(doc))
+            .catch( (err: any) => res.send('Error: '+ err)) 
+        await db.desconectarBD()
+    
 
-        .catch((mensaje) => {
-            res.send(mensaje)
-        })
-
-        db.desconectarBD()
+       
         // const {dni,nombre,nTarjeta} = req.body
         // await db.conectarBD()
         // const dSchema={
