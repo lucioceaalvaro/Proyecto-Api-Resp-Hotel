@@ -16,6 +16,8 @@ const EmpSchema_1 = require("../Schema/EmpSchema");
 const ResSchema_1 = require("../Schema/ResSchema");
 const CliSchema_1 = require("../Schema/CliSchema");
 const database_1 = require("../database/database");
+const eCocina_1 = require("../src/clases/subclases/eCocina");
+const eLimpieza_1 = require("../src/clases/subclases/eLimpieza");
 class DatoRoutes {
     constructor() {
         this.index = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -162,7 +164,7 @@ class DatoRoutes {
                 _dni: dni,
                 _salarioBase: salarioBase,
                 _Titulacion: Titulacion,
-                _NEstrellas: NEstrellas
+                _NEstrella: NEstrellas
             };
             const oSchema = new EmpSchema_1.Empleado(dSchema);
             yield oSchema.save()
@@ -584,6 +586,32 @@ class DatoRoutes {
                 res.send(mensaje);
             });
             database_1.db.desconectarBD();
+        });
+        this.calcularSalario = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield database_1.db.conectarBD();
+            const id = req.params.id;
+            let tmpEmpleado;
+            const query = yield EmpSchema_1.Empleado.findOne({ _dni: id });
+            if (query._tipoObjeto == "Ec") {
+                tmpEmpleado = new eCocina_1.ECocina(query._dni, query._salarioBase, query._Titulacion, query._NEstrella);
+                let salario = tmpEmpleado.calcularSueldo().toString();
+                res.send(salario);
+            }
+            else if (query._tipoObjeto == "Er") {
+                // tmpEmpleado=new ERecepcion (
+                //     query._dni,
+                //     query._salarioBase,
+                //     query._Nocturnidad
+                // )
+                // let salario =tmpEmpleado.calcularSueldo().toString()
+                // res.send(salario)
+            }
+            if (query._tipoObjeto == "El") {
+                tmpEmpleado = new eLimpieza_1.ELimpieza(query._dni, query._salarioBase, query._habitaciones);
+                let salario = tmpEmpleado.calcularSueldo().toString();
+                res.send(salario);
+            }
+            yield database_1.db.desconectarBD();
         });
         this._router = (0, express_1.Router)();
     }

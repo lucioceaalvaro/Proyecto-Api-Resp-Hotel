@@ -6,6 +6,10 @@ import { Reservas, tReservas } from '../Schema/ResSchema';
 import { Clientes, Iclientes } from '../Schema/CliSchema';
 import { db } from '../database/database'
 import { Cliente } from '../clases/Cliente';
+import { Trabajador } from '../src/clases/Empleado';
+import { ECocina } from '../src/clases/subclases/eCocina';
+import { ERecepcion } from '../clases/subclases/eRecepcion';
+import { ELimpieza } from '../src/clases/subclases/eLimpieza';
 
 class DatoRoutes {
     private _router: Router
@@ -167,7 +171,7 @@ class DatoRoutes {
             _dni: dni,
             _salarioBase:salarioBase,
             _Titulacion:Titulacion,
-            _NEstrellas:NEstrellas
+            _NEstrella:NEstrellas
             
         }
         const oSchema = new Empleado(dSchema)
@@ -686,6 +690,46 @@ class DatoRoutes {
         })
 
         db.desconectarBD()
+    }
+    private calcularSalario = async (req:Request, res:Response) => {
+        await db.conectarBD()
+        const id =req.params.id
+        let tmpEmpleado :Trabajador
+        const query  = await Empleado.findOne({_dni:id})
+        if(query._tipoObjeto =="Ec"){
+            tmpEmpleado=new ECocina (
+                
+                query._dni,
+                query._salarioBase,
+                query._Titulacion,
+                query._NEstrella
+            )
+            let salario =tmpEmpleado.calcularSueldo().toString()
+            res.send(salario)
+        }
+        else if(query._tipoObjeto =="Er"){
+            // tmpEmpleado=new ERecepcion (
+                
+            //     query._dni,
+            //     query._salarioBase,
+            //     query._Nocturnidad
+                
+            // )
+            // let salario =tmpEmpleado.calcularSueldo().toString()
+            // res.send(salario)
+        }if(query._tipoObjeto =="El"){
+            tmpEmpleado=new ELimpieza (
+                
+                query._dni,
+                query._salarioBase,
+                query._habitaciones,
+                
+            )
+            let salario =tmpEmpleado.calcularSueldo().toString()
+            res.send(salario)
+        }
+        await db.desconectarBD()
+
     }
     
     
