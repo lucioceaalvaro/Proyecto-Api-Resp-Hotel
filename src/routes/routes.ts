@@ -693,8 +693,9 @@ class DatoRoutes {
     }
     private calcularSalario = async (req:Request, res:Response) => {
         await db.conectarBD()
-        const id =req.params.id
+        const id =req.params.valor
         let tmpEmpleado :Trabajador
+        let prueba:ERecepcion
         const query  = await Empleado.findOne({_dni:id})
         if(query._tipoObjeto =="Ec"){
             tmpEmpleado=new ECocina (
@@ -708,15 +709,15 @@ class DatoRoutes {
             res.send(salario)
         }
         else if(query._tipoObjeto =="Er"){
-            // tmpEmpleado=new ERecepcion (
+            prueba=new ERecepcion (
                 
-            //     query._dni,
-            //     query._salarioBase,
-            //     query._Nocturnidad
+                query._dni,
+                query._salarioBase,
+                query._Nocturnidad
                 
-            // )
-            // let salario =tmpEmpleado.calcularSueldo().toString()
-            // res.send(salario)
+            )
+            let salario =prueba.calcularSueldo().toString()
+            res.send(salario)
         }if(query._tipoObjeto =="El"){
             tmpEmpleado=new ELimpieza (
                 
@@ -789,6 +790,8 @@ class DatoRoutes {
         this._router.get('/clientes/:valor', this.getclienteDNI)
         this._router.get('/empleado/:valor', this.getempleadoDNI)
         this._router.get('/reserva/:valor', this.getreservaDNI)
+        this._router.get('/salarios/:valor', this.calcularSalario)
+
         //Modificar
        
         this._router.put('/modificarCliente', this.modificarCliente)

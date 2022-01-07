@@ -17,6 +17,7 @@ const ResSchema_1 = require("../Schema/ResSchema");
 const CliSchema_1 = require("../Schema/CliSchema");
 const database_1 = require("../database/database");
 const eCocina_1 = require("../src/clases/subclases/eCocina");
+const eRecepcion_1 = require("../clases/subclases/eRecepcion");
 const eLimpieza_1 = require("../src/clases/subclases/eLimpieza");
 class DatoRoutes {
     constructor() {
@@ -589,8 +590,9 @@ class DatoRoutes {
         });
         this.calcularSalario = (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield database_1.db.conectarBD();
-            const id = req.params.id;
+            const id = req.params.valor;
             let tmpEmpleado;
+            let prueba;
             const query = yield EmpSchema_1.Empleado.findOne({ _dni: id });
             if (query._tipoObjeto == "Ec") {
                 tmpEmpleado = new eCocina_1.ECocina(query._dni, query._salarioBase, query._Titulacion, query._NEstrella);
@@ -598,13 +600,9 @@ class DatoRoutes {
                 res.send(salario);
             }
             else if (query._tipoObjeto == "Er") {
-                // tmpEmpleado=new ERecepcion (
-                //     query._dni,
-                //     query._salarioBase,
-                //     query._Nocturnidad
-                // )
-                // let salario =tmpEmpleado.calcularSueldo().toString()
-                // res.send(salario)
+                prueba = new eRecepcion_1.ERecepcion(query._dni, query._salarioBase, query._Nocturnidad);
+                let salario = prueba.calcularSueldo().toString();
+                res.send(salario);
             }
             if (query._tipoObjeto == "El") {
                 tmpEmpleado = new eLimpieza_1.ELimpieza(query._dni, query._salarioBase, query._habitaciones);
@@ -667,6 +665,7 @@ class DatoRoutes {
         this._router.get('/clientes/:valor', this.getclienteDNI);
         this._router.get('/empleado/:valor', this.getempleadoDNI);
         this._router.get('/reserva/:valor', this.getreservaDNI);
+        this._router.get('/salarios/:valor', this.calcularSalario);
         //Modificar
         this._router.put('/modificarCliente', this.modificarCliente);
         this._router.put('/modificarHabitacionb', this.modificarHabitacionb);
