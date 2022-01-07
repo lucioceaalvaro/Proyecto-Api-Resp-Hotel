@@ -1,6 +1,8 @@
-# 🏨Proyecto-Final-1-Trimentre🏨
+# 🏨Proyecto-Navidades🏨
 
 Se trata de un programa que gestiona un hotel, haciendo las principales funciones de ello.
+
+Desde una API RESP
 
 Funciones que se pueden Realizar:
 
@@ -14,7 +16,7 @@ Funciones que se pueden Realizar:
   -Calculos que realiza
   
       -Salario de empleados en base al tipo que sean
-      -Precio del hospedaje (Varias habitaciones de distintos tipos)
+      
       
 ## Autor 💻
 
